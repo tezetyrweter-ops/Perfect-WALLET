@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfect Wallet</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+body {background: linear-gradient(135deg,#0f2027,#00545f,#000a61fd);color:#fff;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;transition:background 0.5s;}
+.box {background: rgba(255,255,255,0.05);backdrop-filter:blur(10px);max-width:400px;width:100%;padding:25px;border-radius:20px;box-shadow:0 10px 35px rgba(0,0,0,0.6);transition:transform 0.3s, box-shadow 0.3s;}
+.box:hover {transform:translateY(-5px); box-shadow:0 15px 40px rgba(0,0,0,0.7);}
+h2,h3 {text-align:center;font-weight:600;}
+.section {margin-bottom:25px;}
+input,button {width:100%;padding:10px 12px;margin-top:8px;border:none;border-radius:8px;font-size:15px;outline:none;transition:all 0.3s;}
+input{
+  background:#101827;
+  border:1px solid rgba(255,255,255,0.1);
+  padding:14px;
+  border-radius:12px;
+}
+input::placeholder {color:#ddd;}
+input:focus {background: rgba(255,255,255,0.2); box-shadow:0 0 5px #0984e3;}
+button{
+  padding:14px;
+  border-radius:12px;
+  font-size:16px;
+}
+button:hover {background:linear-gradient(90deg,#04fff2bd,#00eeff);transform:scale(1.05);}
+.danger {background:linear-gradient(90deg,#e74c3c,#d63031);}
+.danger:hover {background:linear-gradient(90deg,#ff7675,#e17055);}
+#msg,#msgMain,#msgForgot,#msgRegister,#msgQR,#msgRefresh {text-align:center;margin-top:6px;font-weight:bold;}
+a {text-decoration:none;color:#00ff22;cursor:pointer;}
+video {width:100%;border-radius:12px;margin-top:10px;}
+.history {background: rgba(0,0,0,0.3);padding:12px;max-height:160px;overflow-y:auto;font-size:14px;border-radius:8px;box-shadow: inset 0 0 5px rgba(255,255,255,0.1);}
+.history::-webkit-scrollbar {width:6px;}
+.history::-webkit-scrollbar-thumb {background:#0004ff;border-radius:3px;}
+/* Popup */
+.popup-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.75);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  animation:fadeIn .3s ease;
+}
+
+.popup-card{
+  background:rgba(20,20,40,0.95);
+  padding:25px;
+  border-radius:18px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 0 25px rgba(0,255,255,0.3);
+  animation:scaleIn .35s ease;
+}
+
+.success-icon{
+  font-size:40px;
+  background:linear-gradient(90deg,#00ffcc,#00aaff);
+  width:70px;
+  height:70px;
+  line-height:70px;
+  margin:auto;
+  border-radius:50%;
+  margin-bottom:10px;
+}
+
+.popup-info{
+  text-align:right;
+  margin:15px 0;
+  font-size:15px;
+}
+
+.popup-card button{
+  background:linear-gradient(90deg,#00c6ff,#0072ff);
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes scaleIn{
+  from{transform:scale(.7);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+#loadingScreen h2 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+#loadingBar {
+  transition: width 0.3s ease;
+}
+.balance-box-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.balance-box-updated {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  padding: 20px 30px;
+  border-radius: 15px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  min-width: 250px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.balance-box-updated:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+}
+
+.balance-title-updated {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.balance-amount-updated {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.balance-amount-updated .currency {
+  font-size: 20px;
+}
+
+.balance-username-updated {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.brand{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.brand img{
+  width:70px;
+  margin-bottom:10px;
+}
+
+.brand span{
+  font-size:13px;
+  color:#aaa;
+}
+
+/* ===== REDOT PAY PRO LOGIN ===== */
+
+.login-redot-pro{
+  max-width:380px;
+  padding:40px 28px;
+  border-radius:28px;
+  background:rgba(10,14,30,0.85);
+  backdrop-filter:blur(25px);
+  box-shadow:0 25px 70px rgba(0,0,0,0.8);
+  animation:loginEnter .7s ease;
+}
+
+/* Logo */
+.redot-header{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.redot-header img{
+  width:85px;
+  margin-bottom:10px;
+}
+
+.redot-header h2{
+  margin:0;
+  font-weight:700;
+}
+
+.redot-header span{
+  color:#8f9bb3;
+  font-size:13px;
+}
+
+/* Floating input */
+.input-group{
+  position:relative;
+  margin-top:18px;
+}
+
+.input-group input{
+  width:100%;
+  padding:18px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b1124;
+  color:#fff;
+  font-size:15px;
+}
+
+.input-group label{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#8a94a6;
+  pointer-events:none;
+  transition:.25s;
+  background:#0b1124;
+  padding:0 6px;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label{
+  top:-8px;
+  font-size:12px;
+  color:#00eeff;
+}
+
+/* focus glow */
+.input-group input:focus{
+  border:1px solid #00eeff;
+  box-shadow:0 0 12px rgba(0,238,255,.35);
+}
+
+/* show password */
+.show-pass{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  opacity:.7;
+}
+
+/* button */
+.redot-login-btn{
+  width:100%;
+  margin-top:22px;
+  padding:17px;
+  border-radius:18px;
+  border:none;
+  font-size:16px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#00c6ff,#0072ff);
+  transition:.3s;
+}
+
+.redot-login-btn:hover{
+  transform:scale(1.04);
+  box-shadow:0 0 20px rgba(0,200,255,.5);
+}
+
+/* links */
+.redot-footer{
+  text-align:center;
+  margin-top:18px;
+  font-size:14px;
+  color:#aaa;
+}
+
+.redot-footer a{
+  color:#00eeff;
+}
+
+/* animation */
+@keyframes loginEnter{
+  from{
+    opacity:0;
+    transform:translateY(40px) scale(.95);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+/* ===== Welcome Screen ===== */
+
+.welcome-screen{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100vh;
+  background:linear-gradient(135deg,#0f2027,#00545f,#000a61fd);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.welcome-box{
+  text-align:center;
+  animation:fadeWelcome .8s ease;
+}
+
+.welcome-logo{
+  width:90px;
+  margin-bottom:20px;
+}
+
+.welcome-box h1{
+  margin:0;
+  font-size:28px;
+}
+
+.welcome-box p{
+  color:#aaa;
+  margin-bottom:35px;
+}
+
+/* buttons */
+.welcome-login,
+.welcome-signup{
+  width:220px;
+  padding:15px;
+  margin:10px auto;
+  display:block;
+  border:none;
+  border-radius:18px;
+  font-size:16px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.welcome-login{
+  background:linear-gradient(90deg,#00c6ff,#0072ff);
+  color:white;
+}
+
+.welcome-signup{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.3);
+  color:white;
+}
+
+.welcome-login:hover,
+.welcome-signup:hover{
+  transform:scale(1.05);
+}
+
+@keyframes fadeWelcome{
+  from{opacity:0;transform:translateY(40px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ===== APP PAGES ===== */
+
+.app-page{
+  display:none;
+  animation:fadePage .4s ease;
+}
+
+.app-page.active{
+  display:block;
+}
+
+@keyframes fadePage{
+  from{opacity:0; transform:translateY(15px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* ===== Bottom Navbar ===== */
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:rgba(10,14,30,.95);
+  backdrop-filter:blur(15px);
+  display:flex;
+  justify-content:space-around;
+  padding:12px 0;
+  z-index:999;
+  box-shadow:0 -5px 25px rgba(0,0,0,.6);
+}
+
+.nav-btn{
+  background:none;
+  border:none;
+  color:#aaa;
+  font-size:13px;
+  cursor:pointer;
+  text-align:center;
+}
+
+.nav-btn.active{
+  color:#00eeff;
+}
+
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+</head>
+<body>
+
+  <div class="bottom-nav">
+
+  <button class="nav-btn active" onclick="showPage('home',this)">
+    🏠<br>صفحة رئيسية
+  </button>
+
+  <button class="nav-btn" onclick="showPage('card',this)">
+    💳<br>بطاقة
+  </button>
+
+  <button class="nav-btn" onclick="showPage('transfer',this)">
+    🔁<br>ارسال اموال
+  </button>
+
+  <button class="nav-btn" onclick="showPage('history',this)">
+    📜<br>سجل
+  </button>
+
+</div>
+
+  <!-- ===== Welcome Screen ===== -->
+<div id="welcomeDiv" class="welcome-screen">
+
+  <div class="welcome-box">
+
+    <img src="logo.png" class="welcome-logo">
+
+    <h1>Perfect Wallet</h1>
+    <p>Secure Digital Payments</p>
+
+    <button class="welcome-login" onclick="goLogin()">
+      Log In
+    </button>
+
+    <button class="welcome-signup" onclick="goSignup()">
+      Sign Up
+    </button>
+
+  </div>
+</div>
+
+<!-- Login -->
+<div id="loginDiv" class="box" style="display:none">
+
+  <div class="redot-header">
+    <img src="logo.png">
+    <h2>Perfect Wallet</h2>
+    <span>Secure Digital Payments</span>
+  </div>
+
+  <!-- Username -->
+  <div class="input-group">
+    <input id="username" placeholder=" " required>
+    <label>اسم المستخدم</label>
+  </div>
+
+  <!-- Password -->
+  <div class="input-group">
+    <input id="password" type="password" placeholder=" " required>
+    <label>كلمة المرور</label>
+    <span class="show-pass" onclick="togglePassword()">👁</span>
+  </div>
+
+  <label style="display:flex;align-items:center;margin-top:12px;font-size:14px;">
+    <input type="checkbox" id="rememberMe" style="width:auto;margin-left:8px">
+    تذكرني
+  </label>
+
+  <button class="redot-login-btn" onclick="login()">
+    تسجيل الدخول
+  </button>
+
+  <div class="redot-footer">
+    <a onclick="showForgot()">نسيت كلمة السر؟</a>
+    <br><br>
+    ليس لديك حساب؟
+    <a onclick="showRegister()">إنشاء حساب</a>
+  </div>
+
+  <p id="msg"></p>
+
+</div>
+
+  <p id="msg"></p>
+</div>
+
+<div id="registerDiv" class="box" style="display:none">
+  <h3>🆕 إنشاء حساب</h3>
+  <input id="regUsername" placeholder="اسم المستخدم">
+  <input id="regPassword" type="password" placeholder="كلمة المرور">
+  <button onclick="register()">تسجيل</button>
+  <p id="msgRegister"></p>
+  <button onclick="backToLogin()" style="margin-top:10px; background:#e67e22;">⬅ العودة لتسجيل الدخول</button>
+</div>
+
+<div id="forgotDiv" class="box" style="display:none">
+  <h3>🔑 نسيت كلمة السر</h3>
+  <input id="forgotUsername" placeholder="اسم المستخدم">
+  <input id="forgotPin" type="number" placeholder="رمز الأمان PIN">
+  <input id="newPassword" type="password" placeholder="كلمة المرور الجديدة">
+  <button onclick="resetPassword()">تحديث كلمة السر</button>
+  <p id="msgForgot"></p>
+  <button onclick="backToLogin()" style="margin-top:10px; background:#e67e22;">⬅ العودة لتسجيل الدخول</button>
+</div>
+
+<!-- Main -->
+<div id="mainDiv" class="box" style="display:none">
+  <div style="text-align:center; margin-bottom:15px;">
+    <img src="cart.png" style="width:100%; max-width:400px;">
+  </div>
+  <div class="section">
+    <h3></h3>
+    <div class="balance-card">
+      <div class="chip"></div>
+      <div class="balance-box-container">
+  <div class="balance-box-updated">
+    <div class="balance-title-updated">Wallet Balance: </div>
+    <div class="balance-amount-updated">
+      <span class="currency"> € </span>
+      <span id="balance">0</span>
+    </div>
+    <div class="balance-username-updated" id="userNameDisplay">اسم المستخدم</div>
+  </div>
+</div>
+
+    <div id="page-home" class="app-page active"></div>
+    <div class="balance-box-container">
+    ...
+  </div>
+    <button onclick="refreshBalance()">🔄 تحديث الرصيد</button>
+    <p id="msgRefresh"></p>
+  </div>
+
+  <div class="section section-card">
+    <h3>🔑 شحن الرصيد</h3>
+    <input id="codeInput" placeholder="كود الشحن">
+    <button onclick="recharge()">شحن</button>
+    <p id="msgMain"></p>
+  </div>
+
+  <div id="page-card" class="app-page">
+  <h3>💳 البطاقة</h3>
+    <div class="card-display">
+      <div class="chip"></div>
+      <h3 id="cardNumber">غير موجود</h3>
+      <div class="amount" id="cvv">---</div>
+      <div class="user-name">Card Holder: <span id="userNameCard">---</span></div>
+    </div>
+    <button onclick="createCard()">إنشاء بطاقة</button>
+  </div>
+
+  <div id="page-transfer" class="app-page">
+  <h3>🔁 تحويل رصيد</h3>
+    <input id="toUser" placeholder="اسم المستخدم">
+    <input id="transferAmount" type="number" placeholder="المبلغ">
+    <button onclick="transferMoney()">تحويل</button>
+  </div>
+  <div class="section section-card">
+    <h3>📱  Perfect Pay </h3>
+    <button onclick="startQRPay()">دفع  </button>
+    <video id="video" style="display:none"></video>
+    <p id="msgQR"></p>
+  </div>
+
+  <div id="page-history" class="app-page">
+  <h3>📜 سجل العمليات</h3>
+  <div id="history" class="history"></div>
+</div>
+  
+  <div id="successPay" class="popup-overlay">
+  <div class="popup-card">
+    <div class="success-icon">✔</div>
+    <h2>تم الدفع بنجاح</h2>
+  </div>
+</div>
+  
+  <!-- Transfer Success Popup -->
+<div id="transferPopup" class="popup-overlay">
+  <div class="popup-card">
+    <div class="success-icon">✔</div>
+    <h2>تم التحويل بنجاح</h2>
+
+    <div class="popup-info">
+      <p><strong>المرسل:</strong> <span id="popupFrom"></span></p>
+      <p><strong>المستلم:</strong> <span id="popupTo"></span></p>
+      <p><strong>المبلغ:</strong> <span id="popupAmount"></span>$</p>
+      <p><strong>التوقيت:</strong> <span id="popupTime"></span></p>
+    </div>
+
+    <button onclick="closePopup()">حسناً</button>
+  </div>
+</div>
+
+<!-- شاشة التحميل -->
+<div id="loadingScreen" style="
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100vh; /* استخدم vh لملء كامل ارتفاع الجهاز */
+    background:#0f2027;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+    overflow:hidden;
+">
+  <h2 style="color:#fff;margin-bottom:20px;">جارٍ التحميل...</h2>
+  <div style="width:70%;height:20px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;">
+    <div id="loadingBar" style="width:0%;height:100%;background:#00eeff;"></div>
+  </div>
+</div>
+
+<!-- Apple Pay Style -->
+<div id="payPopup" class="popup-overlay">
+  <div class="popup-card">
+    <div class="success-icon">🧾</div>
+
+    <h2 id="payStore">اسم المتجر</h2>
+
+    <div style="font-size:35px;margin:15px 0;">
+      $<span id="payAmount">0</span>
+    </div>
+
+    <p>الدفع باستخدام Perfect Pay</p>
+
+    <button onclick="confirmPayment()">تأكيد الدفع</button>
+    <button onclick="cancelPayment()" class="danger" style="margin-top:10px">
+      إلغاء
+    </button>
+  </div>
+</div>
+
+  <div class="section">
+    <button class="danger" onclick="logout()">🚪 تسجيل خروج</button>
+  </div>
+</div>
+
+<!-- ✅ FOOTER هنا -->
+<footer class="footer">
+  © 2026 Perfect Bank — Secure Digital Payments
+</footer>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC2euiKINjcx9Ay8qapBMCDbh9QFVzsVss",
+  authDomain: "abdo-eea3d.firebaseapp.com",
+  databaseURL: "https://abdo-eea3d-default-rtdb.firebaseio.com",
+  projectId: "abdo-eea3d",
+  storageBucket: "abdo-eea3d.firebasestorage.app",
+  messagingSenderId: "516114812388",
+  appId: "1:516114812388:web:a16dc18f4abe3"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let currentUser = null;
+let users = {};
+let rechargeCodes = { "A80X":8,"B25Y":2,"C500Z":5,"C0050Z":5,"D100Q":1,"E200W":2,"E2000W":2,"VIP300":3,"VIP350":30,"F150R":10,"G75M":75,"H60N":60,"I90K":90,"J120L":1,"K180P":10,"L220S":220,"M400T":400,"N600U":600,"O800V":8,"P1000X":1,"Q50A":5,"R30B":3,"S70C":7,"T250D":2,"U450E":4,"V550F":5,"W750G":7,"W750G11":7,"X900H":9,"VIP500":50};
+
+function saveUsers(){ db.ref('users').set(users); }
+function loadUsers(callback){ db.ref('users').once('value').then(snap=>{ users=snap.val()||{}; callback(); }); }
+
+// ---------------- تسجيل الدخول ----------------
+function login(){
+  let u=document.getElementById('username').value.trim();
+  let p=document.getElementById('password').value.trim();
+  const msg=document.getElementById('msg');
+  const rememberMe=document.getElementById('rememberMe').checked;
+  loadUsers(()=>{
+    if(!users[u] || users[u].password!==p){ msg.innerText="❌ بيانات خاطئة"; return; }
+    currentUser=u;
+    if(rememberMe) localStorage.setItem('rememberedUser',u);
+    document.getElementById('loginDiv').style.display="none";
+    document.getElementById('mainDiv').style.display="block";
+    initUserUI();
+  });
+}
+
+let pendingPayment = null;
+
+// شاشة التحميل
+window.addEventListener('load', function(){
+  let bar = document.getElementById('loadingBar');
+  let screen = document.getElementById('loadingScreen');
+  let width = 0;
+  let interval = setInterval(()=>{
+    width += Math.random()*10; // سرعة عشوائية
+    if(width>=100) width=100;
+    bar.style.width = width + '%';
+    if(width>=100){
+      clearInterval(interval);
+      setTimeout(()=>{
+        screen.style.display='none';
+      },500); // بعد نصف ثانية يختفي
+    }
+  },200);
+});
+
+// ---------------- استعادة المستخدم عند التحديث ----------------
+window.onload = function(){
+
+  const remembered = localStorage.getItem('rememberedUser');
+
+  // ✅ إذا المستخدم محفوظ → دخول مباشر
+  if(remembered){
+    currentUser = remembered;
+
+    loadUsers(()=>{
+      if(users[currentUser]){
+
+        document.getElementById("welcomeDiv").style.display="none";
+        document.getElementById("loginDiv").style.display="none";
+        document.getElementById("mainDiv").style.display="block";
+
+        initUserUI();
+
+      }else{
+        localStorage.removeItem('rememberedUser');
+        document.getElementById("welcomeDiv").style.display="flex";
+      }
+    });}else{
+    // ✅ إذا لا يوجد حساب محفوظ → أظهر welcome
+    document.getElementById("welcomeDiv").style.display="flex";
+  }
+};
+
+// ---------------- باقي الوظائف ----------------
+function showRegister(){ document.getElementById('loginDiv').style.display='none'; document.getElementById('registerDiv').style.display='block'; }
+function register(){
+  let u=document.getElementById('regUsername').value.trim();
+  let p=document.getElementById('regPassword').value.trim();
+  const msg=document.getElementById('msgRegister');
+  if(!u||!p){ msg.innerText="❌ املأ جميع الحقول"; return; }
+  loadUsers(()=>{
+    if(users[u]){ msg.innerText="❌ المستخدم موجود"; return; }
+    let pin=Math.floor(1000+Math.random()*9000);
+    users[u]={password:p,balance:0,history:[],cardNumber:null,cvv:null,pin:pin};
+    saveUsers();
+    msg.innerText=`✅ تم إنشاء الحساب بنجاح. رمز الأمان الخاص بك هو: ${pin}`;
+  });
+}
+
+function showPage(page,btn){
+
+  // اخفاء كل الصفحات
+  document.querySelectorAll('.app-page')
+    .forEach(p=>p.classList.remove('active'));
+
+  // اظهار الصفحة المختارة
+  document.getElementById('page-'+page)
+    .classList.add('active');
+
+  // تغيير زر النافبار
+  document.querySelectorAll('.nav-btn')
+    .forEach(b=>b.classList.remove('active'));
+
+  btn.classList.add('active');
+}
+
+function backToLogin(){ document.getElementById('registerDiv').style.display='none'; document.getElementById('forgotDiv').style.display='none'; document.getElementById('loginDiv').style.display='block'; }
+function showForgot(){ document.getElementById('loginDiv').style.display='none'; document.getElementById('forgotDiv').style.display='block'; }
+function resetPassword(){
+  let u=document.getElementById('forgotUsername').value.trim();
+  let pin=document.getElementById('forgotPin').value.trim();
+  let newPass=document.getElementById('newPassword').value.trim();
+  let msg=document.getElementById('msgForgot');
+  if(!u||!pin||!newPass){ msg.innerText="❌ املأ جميع الحقول"; return; }
+  loadUsers(()=>{
+    if(!users[u]){ msg.innerText="❌ المستخدم غير موجود"; return; }
+    if(users[u].pin!=pin){ msg.innerText="❌ رمز الأمان غير صحيح"; return; }
+    users[u].password=newPass;
+    saveUsers();
+    msg.innerText="✅ تم تحديث كلمة السر بنجاح";
+  });
+}
+
+function openScreen(id,btn){
+
+  // اخفاء كل الصفحات
+  document.querySelectorAll('.screen')
+    .forEach(s=>s.classList.remove('active'));
+
+  // اظهار الصفحة
+  document.getElementById(id)
+    .classList.add('active');
+
+  // تفعيل زر النافبار
+  document.querySelectorAll('.nav')
+    .forEach(n=>n.classList.remove('active'));
+
+  btn.classList.add('active');
+}
+
+function initUserUI(){
+  let user=users[currentUser];
+  user.balance=user.balance||0;
+  user.history=user.history||[];
+  user.cardNumber=user.cardNumber||null;
+  user.cvv=user.cvv||null;
+  document.getElementById("balance").innerText=user.balance;
+  document.getElementById("userNameDisplay").innerText=currentUser;
+  document.getElementById("cardNumber").innerText=user.cardNumber||"غير موجود";
+  document.getElementById("cvv").innerText=user.cvv||"---";
+  document.getElementById("userNameCard").innerText=currentUser;
+  showHistory();
+}
+
+function togglePassword(){
+  const pass = document.getElementById("password");
+  pass.type = pass.type === "password" ? "text" : "password";
+}
+
+function recharge(){
+  let code = document.getElementById('codeInput').value.trim();
+  let msg = document.getElementById('msgMain');
+  if(!code){ msg.innerText="❌ املأ الكود"; return; }
+
+  db.ref(`rechargeCodes/${code}`).once('value').then(snap=>{
+    if(!snap.exists()){
+      msg.innerText="❌ كود غير صالح";
+      return;
+    }
+
+    let data = snap.val();
+    if(data.uses <= 0){
+      msg.innerText="❌ تم استخدام هذا الكود بالكامل";
+      return;
+    }
+
+    // تحديث رصيد المستخدم
+    let user = users[currentUser];
+    user.balance = (user.balance || 0) + data.amount;
+    user.history.push(`💰 شحن +${data.amount}$ (كود ${code})`);
+    document.getElementById("balance").innerText = user.balance;
+    showHistory();
+
+    // نقص عدد الاستخدامات
+    db.ref(`rechargeCodes/${code}/uses`).set(data.uses - 1);
+
+    msg.innerText=`✅ تم شحن ${data.amount}$`;
+    saveUsers();
+  });
+}
+
+function createCard(){
+  let user=users[currentUser];
+  if(user.cardNumber){ alert("❌ لديك بطاقة بالفعل"); return; }
+  user.cardNumber="4000-"+Math.floor(1000+Math.random()*9000)+"-"+Math.floor(1000+Math.random()*9000)+"-"+Math.floor(1000+Math.random()*9000);
+  user.cvv=Math.floor(100+Math.random()*900);
+  user.history.push("💳 إنشاء بطاقة");
+  document.getElementById("cardNumber").innerText=user.cardNumber;
+  document.getElementById("cvv").innerText=user.cvv;
+  document.getElementById("userNameCard").innerText=currentUser;
+  saveUsers();
+  showHistory();
+}
+
+function goLogin(){
+  document.getElementById("welcomeDiv").style.display="none";
+  document.getElementById("loginDiv").style.display="block";
+}
+
+function goSignup(){
+  document.getElementById("welcomeDiv").style.display="none";
+  document.getElementById("registerDiv").style.display="block";
+}
+
+function transferMoney(){
+  let toUser=document.getElementById('toUser').value.trim();
+  let amount=parseInt(document.getElementById('transferAmount').value,10);
+  let user=users[currentUser];
+  if(!users[toUser]) return alert("❌ المستخدم غير موجود");
+  if(toUser===currentUser) return alert("❌ لا يمكن التحويل لنفسك");
+  if(!amount||amount<=0) return alert("❌ مبلغ غير صحيح");
+  if(amount>10000) return alert("❌ المبلغ كبير جدًا");
+  if(user.balance<amount) return alert("❌ رصيد غير كافي");
+  user.balance-=amount;
+  users[toUser].balance+=amount;
+  user.history.push(`🔁 تحويل -${amount}$ إلى ${toUser}`);
+  users[toUser].history=users[toUser].history||[];
+  users[toUser].history.push(`🔁 تحويل +${amount}$ من ${currentUser}`);
+  document.getElementById("balance").innerText=user.balance;
+  showTransferPopup(currentUser,toUser,amount);
+  saveUsers();
+  showHistory();
+}
+
+function showTransferPopup(from,to,amount){
+  const now = new Date();
+  const time =
+    now.toLocaleDateString() + " - " +
+    now.toLocaleTimeString();
+
+  document.getElementById("popupFrom").innerText = from;
+  document.getElementById("popupTo").innerText = to;
+  document.getElementById("popupAmount").innerText = amount;
+  document.getElementById("popupTime").innerText = time;
+
+  document.getElementById("transferPopup").style.display="flex";
+}
+
+function closePopup(){
+  document.getElementById("transferPopup").style.display="none";
+}
+
+function showHistory(){
+  let box=document.getElementById("history");
+  if(!box) return;
+  let user=users[currentUser];
+  box.innerHTML="";
+  user.history.forEach(h=>{
+    let p=document.createElement("p");
+    p.innerText=h;
+    box.appendChild(p);
+  });
+}
+
+// تحديث الرصيد
+function refreshBalance(){
+  let msg=document.getElementById("msgRefresh");
+  msg.innerText="⏳ جاري التحديث...";
+  loadUsers(()=>{
+    if(!users[currentUser]){ msg.innerText="❌ حدث خطأ"; return; }
+    let u=users[currentUser];
+    document.getElementById("balance").innerText=u.balance||0;
+    document.getElementById("cardNumber").innerText=u.cardNumber||"غير موجود";
+    document.getElementById("cvv").innerText=u.cvv||"---";
+    showHistory();
+    msg.innerText="✅ تم تحديث الرصيد";
+    setTimeout(()=>msg.innerText="",1500);
+  });
+}
+
+function logout(){ 
+  currentUser=null; 
+  localStorage.removeItem('rememberedUser');
+  location.reload(); 
+}
+
+// ---------------- QR Pay ----------------
+let video = document.getElementById('video');
+let scanning = false;
+function startQRPay(){
+  if(scanning) return;
+  scanning = true;
+  video.style.display='block';
+  navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}})
+    .then(stream=>{video.srcObject=stream; video.setAttribute("playsinline",true); video.play(); tick();})
+    .catch(err=>{document.getElementById('msgQR').innerText="❌ لم نتمكن من الوصول للكاميرا"; scanning=false;});
+}
+
+function tick(){
+  if(video.readyState===video.HAVE_ENOUGH_DATA){
+    let canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    let code = jsQR(imageData.data, canvas.width, canvas.height);
+    if(code){ processQRPayment(code.data); stopVideo(); return; }
+  }
+  if(scanning) requestAnimationFrame(tick);
+}
+
+function stopVideo(){ scanning=false; video.srcObject.getTracks().forEach(track=>track.stop()); video.style.display='none'; }
+
+function processQRPayment(data){
+  let msg=document.getElementById('msgQR');
+  let payment;
+
+  try{
+    payment=JSON.parse(data);
+  }catch(e){
+    msg.innerText="❌ QR غير صالح";
+    return;
+  }
+
+  if(!users[payment.storeId]){
+    msg.innerText="❌ المتجر غير موجود";
+    return;
+  }
+
+  pendingPayment = payment;
+
+  document.getElementById("payStore").innerText =
+    payment.storeName || payment.storeId;
+
+  document.getElementById("payAmount").innerText =
+    payment.amount;
+
+  document.getElementById("payPopup").style.display="flex";
+}
+
+function confirmPayment(){
+
+  if(!pendingPayment) return;
+
+  let fromUser = users[currentUser];
+  let toUser = pendingPayment.storeId;
+  let amount = pendingPayment.amount;
+
+  if(fromUser.balance < amount){
+    toast("❌ رصيد غير كافي");
+    cancelPayment();
+    return;
+  }
+
+  // خصم
+  fromUser.balance -= amount;
+  users[toUser].balance += amount;
+
+  let time = new Date().toLocaleString();
+
+  fromUser.history.push(`📱 دفع ${amount}$ إلى ${toUser} | ${time}`);
+  users[toUser].history.push(`📱 استلام ${amount}$ من ${currentUser} | ${time}`);
+
+  saveUsers();
+  showHistory();
+
+  document.getElementById("balance").innerText = fromUser.balance;
+
+  cancelPayment();
+
+  showSuccessAnimation();
+}
+
+function cancelPayment(){
+  pendingPayment=null;
+  document.getElementById("payPopup").style.display="none";
+}
+
+function showSuccessAnimation(){
+  let el=document.getElementById("successPay");
+  el.style.display="flex";
+
+  setTimeout(()=>{
+    el.style.display="none";
+  },2000);
+}
+</script>
+</body>
+    </html>
+
+
+
+
+
